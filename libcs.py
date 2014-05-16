@@ -103,6 +103,48 @@ def on1296():
                     yield x0, x1, x2, x3
 
 
+class SoloGame:
+    def __init__(self, player):
+        self.camps = {}
+        self.player = player
+
+    def on_turn(self, player):
+        markers = {}
+        done = False
+
+        while not done:
+            rs = roll()
+            print('   {}, {}'.format(markers, rs))
+            if len(markers) == 3 and is_burst(rs, markers):
+                return None #bursted
+            player.place_markers(rs, markers, self)
+            done = player.is_done(markers, self)
+        print('   {}'.format(markers))
+        return markers
+
+    def run(self):
+        m = self.on_turn(self.player)
+        if m is not None:
+            self.camps.update(m)
+
+    def gameover(self):
+        count = 0
+        for c in self.camps:
+            if not self.available(c):
+                count += 1
+        return count > 2
+
+    def available(self, x):
+        return self.camps.get(x, 0) < steps[x]
+
+    def move_marker_on(self, markers, x):
+        assert self.available(x)
+        v = markers.get(x, None)
+        if v is None:
+            v = self.camps.get(x, 0)
+        markers[x] = v + 1
+
+
 
 if __name__ == "__main__":
     import doctest

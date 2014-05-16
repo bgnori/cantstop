@@ -41,6 +41,7 @@ def has_marker(markers, x):
     return x in markers
 
 def move_marker_on(markers, x, camps):
+    assert available(x, camps)
     v = markers.get(x, None)
     if v is None:
         v = camps.get(x, 0)
